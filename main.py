@@ -6,13 +6,16 @@ import datetime
 import json
 import uuid
 
+
+AUDIT_FILE_PATH = "/tmp/audit_report.csv"
+
 def log_audit(request_id, step, details=""):
-    file_exists = os.path.isfile('audit_report.csv')
+    file_exists = os.path.isfile(AUDIT_FILE_PATH)
     now = datetime.datetime.now()
-    # High precision timestamp up to 4 integer places for fractional seconds (.XXXX)
+    
     timestamp_str = now.strftime('%Y-%m-%d %H:%M:%S.%f')[:-2]
     
-    with open('audit_report.csv', mode='a', newline='', encoding='utf-8') as f:
+    with open(AUDIT_FILE_PATH, mode='a', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         if not file_exists:
             writer.writerow(["Timestamp", "RequestID", "Step", "Details"])
@@ -21,6 +24,7 @@ def log_audit(request_id, step, details=""):
             details = json.dumps(details)
             
         writer.writerow([timestamp_str, request_id, step, str(details)])
+
 
 
 app = FastAPI()
