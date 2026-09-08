@@ -122,10 +122,17 @@ async def joblogic_webhook(request: Request):
 
             log_audit(req_id, "Form Download Started", f"Fetching URL for Id: {id}")
             res = requests.post(formUrl, headers=headers, json=body)
-            resV2 = res.json()
+            
+            # 1. Check if the Joblogic request actually succeeded
+            if res.status_code != 200:
+                log_audit(req_id, "Form Download Failed", f"Status {res.status_code}: {res.text}")
+                return {"status": "error", "message": f"Joblogic returned {res.status_code}", "raw_response": res.text}
 
+            # 2. Safely parse JSON
+            resV2 = res.json()
             file_source = resV2.get("Url")
             log_audit(req_id, "Form Download Complete", f"Got file URL: {file_source}")
+            
             
             job_id = data["data"]["job_id"]
             form_name = data["data"]["form_name"]
