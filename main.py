@@ -6,24 +6,14 @@ import datetime
 import json
 import uuid
 
-
-AUDIT_FILE_PATH = "/tmp/audit_report.csv"
-
 def log_audit(request_id, step, details=""):
-    file_exists = os.path.isfile(AUDIT_FILE_PATH)
     now = datetime.datetime.now()
-    
     timestamp_str = now.strftime('%Y-%m-%d %H:%M:%S.%f')[:-2]
     
-    with open(AUDIT_FILE_PATH, mode='a', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        if not file_exists:
-            writer.writerow(["Timestamp", "RequestID", "Step", "Details"])
+    if isinstance(details, (dict, list)):
+        details = json.dumps(details)
         
-        if isinstance(details, (dict, list)):
-            details = json.dumps(details)
-            
-        writer.writerow([timestamp_str, request_id, step, str(details)])
+    print(f"[{timestamp_str}] [{request_id}] {step}: {details}")
 
 
 
