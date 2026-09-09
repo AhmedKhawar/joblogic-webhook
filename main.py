@@ -96,8 +96,15 @@ async def joblogic_webhook(request: Request):
         return {"status": "error", "message": "Network error calling download API"}
 
     if download_res.status_code != 200:
-        log_audit("Error", f"Form Download API returned HTTP {download_res.status_code}: {download_res.text}")
-        return {"status": "error", "message": f"Form download failed with status {download_res.status_code}"}
+        error_detail = {
+            "status_code": download_res.status_code,
+            "server": download_res.headers.get("Server"),
+            "content_type": download_res.headers.get("Content-Type"),
+            "body": download_res.text[:500]  # first 500 characters
+        }
+        log_audit("Error", f"Download failed: {error_detail}")
+        return {"status": "error", "message": f"Download failed: {download_res.status_code}", "debug": error_detail}
+
 
     download_json = download_res.json()
     file_source = download_json.get("Url")
