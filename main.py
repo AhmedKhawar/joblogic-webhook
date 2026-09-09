@@ -88,7 +88,7 @@ async def joblogic_webhook(request: Request):
 
     log_audit("Form Download Started", f"Fetching URL for Id: {form_id}")
     try:
-        download_res = requests.post(form_url, headers=headers, json=body, timeout=15)
+        download_res = requests.post(form_url, headers=headers, json=body)
     except requests.exceptions.RequestException as e:
         log_audit("Error", f"Form Download network failure: {e}")
         return {"status": "error", "message": "Network error calling download API"}
@@ -118,7 +118,7 @@ async def joblogic_webhook(request: Request):
     }
 
     try:
-        engineer_res = requests.post(engineer_url, headers=headers, json=engineer_body, timeout=15)
+        engineer_res = requests.post(engineer_url, headers=headers, json=engineer_body)
     except requests.exceptions.RequestException as e:
         log_audit("Error", f"Get Engineer network failure: {e}")
         return {"status": "error", "message": "Network error calling engineer API"}
@@ -161,7 +161,7 @@ async def joblogic_webhook(request: Request):
         logbook_body["AssetId"] = int(asset_id)
 
     try:
-        logbook_res = requests.post(logbook_url, headers=headers, json=logbook_body, timeout=15)
+        logbook_res = requests.post(logbook_url, headers=headers, json=logbook_body)
     except requests.exceptions.RequestException as e:
         log_audit("Error", f"Add Logbook Item network failure: {e}")
         return {"status": "error", "message": "Network error submitting logbook item"}
